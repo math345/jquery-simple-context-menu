@@ -114,15 +114,16 @@ jQuery.fn.contextPopup = function(menuData) {
 
     // When clicking on a link in menu: clean up (in addition to handlers on link already)
     menu.find('a').click(function() {
-      bg.remove();
-      menu.remove();
+      //bg.remove();
+      //menu.remove();
+      onRemoveMenu();
     });
 
     // Cancel event, so real browser popup doesn't appear.
     return false;
   });
 
-  function onRemoveMenu(menu){
+  function onRemoveMenu(){
     // If click or right click anywhere else on page: remove clean up.
     $('ul.' + settings.contextMenuClass).remove();
 
