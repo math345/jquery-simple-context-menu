@@ -6,6 +6,11 @@ plugins already. But they require a fair amount of work to make them look good.
 
 This one is easy to use, small, and looks good.
 
+Fix Bug (by math345)
+----
+* bg div can't cover the whole viewport when scrolling. click outside of bg div can't remove menu!  bind contextmenu and click event on body can solve the promble.
+
+
 Demo
 ----
 

@@ -74,6 +74,12 @@ jQuery.fn.contextPopup = function(menuData) {
 
   // On contextmenu event (right click)
   this.on('contextmenu', function(e) {
+    // fix bug: don't create more menus when a menu existed.
+    if($('ul.' + settings.contextMenuClass).length > 0){
+      onRemoveMenu();
+      return;
+    }
+
     var menu = createMenu(e)
       .show();
     
@@ -90,16 +96,21 @@ jQuery.fn.contextPopup = function(menuData) {
     menu.css({zIndex:1000001, left:left, top:top})
       .on('contextmenu', function() { return false; });
 
+    // fix bug: bg div can't cover the whole viewport when scrolling. click outside of bg div
+    // can't remove menu!  bind contextmenu and click event on body can solve the promble.
+
     // Cover rest of page with invisible div that when clicked will cancel the popup.
-    var bg = $('<div></div>')
-      .css({left:0, top:0, width:'100%', height:'100%', position:'absolute', zIndex:1000000})
-      .appendTo(document.body)
-      .on('contextmenu click', function() {
-        // If click or right click anywhere else on page: remove clean up.
-        bg.remove();
-        menu.remove();
-        return false;
-      });
+    //var bg = $('<div></div>')
+    //  .css({left:0, top:0, width:'100%', height:'100%', position:'absolute', zIndex:1000000})
+    //  .appendTo(document.body)
+    //  .on('contextmenu click', function() {
+    //    // If click or right click anywhere else on page: remove clean up.
+    //    bg.remove();
+    //    menu.remove();
+    //    return false;
+    //  });
+    $(document.body).bind('contextmenu', onRemoveMenu);
+    $(document.body).bind('click', onRemoveMenu);
 
     // When clicking on a link in menu: clean up (in addition to handlers on link already)
     menu.find('a').click(function() {
@@ -110,6 +121,16 @@ jQuery.fn.contextPopup = function(menuData) {
     // Cancel event, so real browser popup doesn't appear.
     return false;
   });
+
+  function onRemoveMenu(menu){
+    // If click or right click anywhere else on page: remove clean up.
+    $('ul.' + settings.contextMenuClass).remove();
+
+    // unbind the events for recovering the body's original events.
+    $(document.body).unbind('contextmenu', onRemoveMenu);
+    $(document.body).unbind('click', onRemoveMenu);
+    return false;
+  };
 
   return this;
 };
